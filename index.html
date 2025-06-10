@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Casos de Neurodesarrollo</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0f2fe; /* Light blue background */
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Center vertically for main page, top for simulation */
+            padding: 2.5rem; /* Equivalent to p-10 */
+        }
+        .container {
+            max-width: 1200px; /* Wider for main page, adjust for simulation */
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 20px; /* Slightly more rounded */
+            box-shadow: 0 15px 35px -8px rgba(0, 0, 0, 0.2), 0 5px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 3rem; /* More padding */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Styles for Main Page Cards */
+        .main-card {
+            background-color: #f7fafc; /* Light gray background for cards */
+            border-radius: 16px;
+            box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border: 1px solid #e2e8f0; /* Subtle border */
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            min-height: 280px; /* Ensure consistent card height */
+        }
+        .main-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.15), 0 5px 10px -2px rgba(0, 0, 0, 0.08);
+        }
+        .main-icon-container {
+            font-size: 3.5rem; /* Larger icon size */
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+        /* Specific colors for main page cards */
+        .main-card-tea .main-icon-container { background-color: #bfdbfe; color: #1e40af; } /* Blue */
+        .main-card-tdah .main-icon-container { background-color: #fbd38d; color: #b45309; } /* Yellow-orange */
+        .main-card-reading .main-icon-container { background-color: #b2f5ea; color: #0f766e; } /* Teal */
+        .main-card-intellectual .main-icon-container { background-color: #c3dafe; color: #4338ca; } /* Lavender */
+        .main-card h2 {
+            font-size: 1.75rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 0.75rem;
+        }
+        .main-card p {
+            font-size: 1.125rem; /* text-lg */
+            color: #4a5568; /* gray-700 */
+        }
+
+        /* Styles for Simulation Page */
+        .simulation-container {
+            max-width: 900px; /* Narrower for simulation */
+        }
+        .icon-container {
+            font-size: 4rem; /* Larger icon size for single case */
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        .card-tea .icon-container { background-color: #bfdbfe; color: #1e40af; } /* Blue */
+        .card-tdah .icon-container { background-color: #fbd38d; color: #b45309; } /* Yellow-orange */
+        .card-reading .icon-container { background-color: #b2f5ea; color: #0f766e; } /* Teal */
+        .card-intellectual .icon-container { background-color: #c3dafe; color: #4338ca; } /* Lavender */
+
+        textarea {
+            width: 100%;
+            min-height: 150px; /* More height for intervention ideas */
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid #cbd5e0; /* Gray-300 */
+            resize: vertical;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-top: 2rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6; /* Blue-500 */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); /* Blue-300 with transparency */
+        }
+        .main-button {
+            background-color: #3b82f6; /* Blue-500 */
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px; /* Full rounded */
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .main-button:hover {
+            background-color: #2563eb; /* Blue-600 */
+            transform: translateY(-2px);
+        }
+        .main-button:disabled {
+            background-color: #93c5fd; /* Blue-300 */
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .feedback-message {
+            background-color: #d1fae5; /* Green-100 */
+            color: #065f46; /* Green-800 */
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            width: 100%;
+            font-size: 1.1rem;
+            text-align: center;
+            border: 1px solid #a7f3d0; /* Green-200 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: none; /* Hidden by default */
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+        .feedback-message.show {
+            display: block;
+            opacity: 1;
+        }
+        .navigation-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+        .navigation-buttons .button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+        .navigation-buttons .button.next {
+            background-color: #10b981; /* Green-500 */
+            color: white;
+        }
+        .navigation-buttons .button.next:hover {
+            background-color: #059669; /* Green-600 */
+            transform: translateY(-2px);
+        }
+        .navigation-buttons .button.finalize { /* New button style */
+            background-color: #6366f1; /* Indigo-500 */
+            color: white;
+        }
+        .navigation-buttons .button.finalize:hover {
+            background-color: #4f46e5; /* Indigo-600 */
+            transform: translateY(-2px);
+        }
+        .navigation-buttons .button.start-over {
+            background-color: #ef4444; /* Red-500 */
+            color: white;
+        }
+        .navigation-buttons .button.start-over:hover {
+            background-color: #dc2626; /* Red-600 */
+            transform: translateY(-2px);
+        }
+        .back-to-main {
+            background-color: #60a5fa; /* Blue-400 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+        .back-to-main:hover {
+            background-color: #3b82f6; /* Blue-500 */
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Page View -->
+    <div id="main-page-view" class="container">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-center text-blue-800 mb-8 md:mb-12 leading-tight">
+            ¡Bienvenidos, Orientadores!
+        </h1>
+
+        <p class="text-center text-lg md:text-xl text-gray-700 mb-12 max-w-3xl">
+            Aquí encontrarán los casos de estudio que su grupo asignado deberá analizar. Hagan clic en la tarjeta de su caso para iniciar la simulación interactiva y proponer sus intervenciones.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full">
+
+            <!-- Caso 1: TEA -->
+            <div class="main-card main-card-tea" onclick="window.startSimulation('tea')">
+                <div class="main-icon-container">🧩</div>
+                <h2 class="text-blue-800">Grupo 1: Sofía</h2>
+                <p class="text-gray-700">Trastorno del Espectro Autista (TEA)</p>
+            </div>
+
+            <!-- Caso 2: TDAH -->
+            <div class="main-card main-card-tdah" onclick="window.startSimulation('tdah')">
+                <div class="main-icon-container">⚡</div>
+                <h2 class="text-yellow-800">Grupo 2: Marcos</h2>
+                <p class="text-gray-700">Trastorno por Déficit de Atención e Hiperactividad (TDAH)</p>
+            </div>
+
+            <!-- Caso 3: Trastorno Específico del Aprendizaje (Lectura) -->
+            <div class="main-card main-card-reading" onclick="window.startSimulation('reading-difficulty')">
+                <div class="main-icon-container">📚</div>
+                <h2 class="text-teal-800">Grupo 3: Carlos</h2>
+                <p class="text-gray-700">Trastorno Específico del Aprendizaje (Dislexia)</p>
+            </div>
+
+            <!-- Caso 4: Discapacidad Intelectual Leve -->
+            <div class="main-card main-card-intellectual" onclick="window.startSimulation('intellectual-disability')">
+                <div class="main-icon-container">⭐</div>
+                <h2 class="text-indigo-800">Grupo 4: Laura</h2>
+                <p class="text-gray-700">Discapacidad Intelectual Leve</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Simulation View (Hidden by default) -->
+    <div id="simulation-page-view" class="container simulation-container" style="display: none;">
+        <button id="back-to-main-button" class="back-to-main hidden">Volver a la Página Principal</button>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-center text-blue-800 mb-8 leading-tight">
+            Simulación: Intervenciones en Casos de Neurodesarrollo
+        </h1>
+
+        <p class="text-center text-lg md:text-xl text-gray-700 mb-8 max-w-2xl">
+            ¡Hola, futuros orientadores! Analiza el caso que te presento. Piensa en tus propias ideas de **intervención desde el rol de orientación** y escríbelas. Cuando estés listo, haz clic en "Enviar Intervención" para recibir mi retroalimentación y refinar tu propuesta. ¡Vamos a ello!
+        </p>
+
+        <!-- Dynamic Case Content -->
+        <div id="case-display" class="w-full text-center">
+            <div id="icon-container" class="icon-container mx-auto"></div>
+            <h2 id="case-title" class="text-2xl font-bold text-blue-800 mb-3"></h2>
+            <h3 id="case-name" class="text-xl font-semibold text-blue-600 mb-4"></h3>
+            <p id="case-description" class="text-gray-700 mb-4 text-left mx-auto max-w-prose"></p>
+            <ul id="case-characteristics" class="text-sm text-gray-600 list-disc list-inside text-left mx-auto max-w-prose"></ul>
+        </div>
+
+        <p class="text-md font-bold text-gray-800 mt-8 mb-2 text-left w-full max-w-prose">
+            Mis ideas de intervención para este caso:
+        </p>
+        <textarea id="intervention-input" class="text-gray-700" placeholder="Escribe aquí tus sugerencias..."></textarea>
+
+        <button id="submit-button" class="main-button">Enviar Intervención</button>
+
+        <div id="feedback-message" class="feedback-message hidden"></div>
+
+        <div class="navigation-buttons">
+            <button id="finalize-intervention-button" class="button finalize" style="display: none;">He terminado, siguiente caso</button>
+            <button id="start-over-button" class="button start-over" style="display: none;">Reiniciar Simulación</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Importaciones de Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variables globales proporcionadas por el entorno de Canvas
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let userId = null; // Almacenará el ID del usuario
+
+        // Data for each case with detailed feedback steps
+        const cases = [
+            {
+                id: 'tea',
+                className: 'card-tea',
+                icon: '🧩',
+                title: 'Trastorno del Espectro Autista (TEA)',
+                name: 'Sofía, la experta en historia romana',
+                description: 'Sofía es una alumna de 3º de la ESO con TEA. Es extremadamente brillante en asignaturas como Historia y Ciencias, donde sus conocimientos son enciclopédicos, especialmente en historia romana. Sin embargo, muestra dificultades significativas en la comunicación social y la interacción. Durante los trabajos en grupo, Sofía tiende a monopolizar la conversación con datos históricos irrelevantes para la tarea o se niega a escuchar las ideas de sus compañeros si no coinciden con su visión. Le cuesta entender las bromas o el sarcasmo, lo que a veces genera malentendidos. Además, cualquier cambio inesperado en la rutina del aula, como una excursión sorpresa o un cambio de horario de última hora, le provoca una gran ansiedad y, en ocasiones, crisis de frustración. En la hora del recreo, prefiere quedarse sola leyendo sobre emperadores romanos en la biblioteca que socializar con sus compañeros.',
+                characteristics: [
+                    'Dificultades en reciprocidad socioemocional y comunicación no verbal.',
+                    'Intereses muy restringidos y específicos.',
+                    'Insistencia en la monotonía y gran angustia ante cambios.',
+                    'Hiper o hiporeactividad a estímulos sensoriales.'
+                ],
+                feedbackSteps: [
+                    {
+                        message: '¡Excelente inicio! Has captado un punto clave: las dificultades en la interacción social de Sofía. Desde tu rol como orientador, ¿qué **programa o estrategia a nivel de centro** podrías sugerir o implementar para apoyar a Sofía en la mejora de sus habilidades comunicativas y sociales, quizás integrando sus intereses especiales?',
+                    },
+                    {
+                        message: '¡Muy buena idea! Pensar en programas estructurados es fundamental. Sofía se frustra significativamente con los cambios inesperados. Como orientador, ¿cómo coordinarías con el equipo docente y la familia para establecer un **sistema de anticipación y apoyo en las transiciones** que minimice su ansiedad en el entorno escolar?',
+                    },
+                    {
+                        message: 'Perfecto. La coordinación es clave para la anticipación. Considerando que Sofía prefiere la soledad en el recreo, ¿qué **estrategias de intervención psicoeducativa individualizada** podrías diseñar para fomentar su participación social gradual, respetando sus necesidades, y cómo evaluarías su progreso en este aspecto?'
+                    }
+                ]
+            },
+            {
+                id: 'tdah',
+                className: 'card-tdah',
+                icon: '⚡',
+                title: 'Trastorno por Déficit de Atención e Hiperactividad (TDAH)',
+                name: 'Marcos y el desafío de la atención',
+                description: 'Marcos es un estudiante de 2º de la ESO con TDAH, predominantemente inatento. En clase, a menudo se le ve "en las nubes", mirando por la ventana o dibujando en su cuaderno en lugar de atender las explicaciones. Le cuesta mucho copiar los apuntes del pizarrón y, cuando lo hace, suele perderse partes importantes o cometer errores por descuido. Sus cuadernos están desordenados, y con frecuencia pierde sus materiales escolares. Cuando se le pide que realice una tarea larga o que requiere concentración, como un ensayo, la inicia con entusiasmo, pero se distrae rápidamente y rara vez la termina a tiempo. A pesar de su inteligencia, sus calificaciones son inconsistentes debido a la falta de atención y organización. En los trabajos en equipo, sus compañeros se frustran porque no parece comprometerse y olvida las responsabilidades asignadas.',
+                characteristics: [
+                    'Falla en prestar atención a detalles y comete errores por descuido.',
+                    'Dificultad para mantener la atención en tareas prolongadas.',
+                    'Dificultad para organizar tareas y actividades.',
+                    'Pierde con frecuencia cosas necesarias.'
+                ],
+                feedbackSteps: [
+                    {
+                        message: '¡Punto de partida excelente! La inatención y desorganización de Marcos afectan su rendimiento. Como orientador, ¿qué **protocolos de evaluación psicopedagógica** aplicarías para profundizar en el perfil cognitivo de Marcos y qué **estrategias de apoyo a las funciones ejecutivas** propondrías al equipo docente para su implementación en el aula?',
+                    },
+                    {
+                        message: '¡Muy buena idea! La evaluación es el primer paso y el apoyo a funciones ejecutivas es vital. Marcos tiene dificultades para organizar tareas y materiales. ¿Cómo coordinarías con los tutores y la familia para implementar un **sistema de organización y planificación común** entre la casa y el centro que ayude a Marcos a gestionar su tiempo y pertenencias?',
+                    },
+                    {
+                        message: '¡Fantástico! La coherencia entre casa y escuela es crucial. Marcos olvida sus responsabilidades en trabajos en equipo. ¿Qué **estrategias de mediación o programas de desarrollo de habilidades sociales y de trabajo cooperativo** podrías ofrecer o sugerir para mejorar su compromiso y la dinámica grupal?'
+                    }
+                ]
+            },
+            {
+                id: 'reading-difficulty',
+                className: 'card-reading',
+                icon: '📚',
+                title: 'Trastorno Específico del Aprendizaje (Dislexia)',
+                name: 'Carlos y la lectura silenciosa',
+                description: 'Carlos es un estudiante de 4º de la ESO con un trastorno específico del aprendizaje con dificultad en la lectura (dislexia). A pesar de sus esfuerzos y de haber recibido apoyo desde primaria, la lectura en voz alta en clase le sigue generando mucha ansiedad y le resulta muy lenta y laboriosa, invirtiendo mucho tiempo en decodificar cada palabra. Su comprensión lectora en textos extensos también se ve afectada, ya que el esfuerzo en la decodificación le resta recursos para entender el significado global. Esto impacta directamente en asignaturas como Lengua Castellana y Literatura, donde las pruebas de comprensión textual son frecuentes, y en el estudio de cualquier asignatura que requiera leer libros de texto. A menudo, recurre a resúmenes o a que sus compañeros le expliquen el contenido, lo que le impide desarrollar su autonomía académica.',
+                characteristics: [
+                    'Lectura de palabras imprecisa o lenta y con esfuerzo.',
+                    'Dificultad para comprender el significado de lo que se lee.',
+                    'Las dificultades están por debajo de lo esperado para su edad.',
+                    'Interfieren significativamente con el rendimiento académico.'
+                ],
+                feedbackSteps: [
+                    {
+                        message: '¡Excelente observación! La ansiedad de Carlos y sus dificultades en lectura son un gran desafío. Como orientador, ¿qué **adaptaciones metodológicas y curriculares específicas** recomendarías a los profesores de las diferentes asignaturas para facilitar su acceso a la información escrita y la evaluación?',
+                    },
+                    {
+                        message: '¡Muy bien! Las adaptaciones son clave. La comprensión lectora en textos extensos es un reto para Carlos. ¿Qué **recursos de tecnología asistiva o programas de entrenamiento en estrategias de lectura** podrías investigar y proponer para apoyar su autonomía académica y comprensión a largo plazo?',
+                    },
+                    {
+                        message: '¡Perfecto! Las herramientas y estrategias son esenciales. Carlos a menudo recurre a resúmenes de compañeros, lo que afecta su autonomía. ¿Cómo podrías diseñar un **plan de intervención psicopedagógica individualizado** que le dote de herramientas para desarrollar sus propias estrategias de estudio y gestionar su frustración?'
+                    }
+                ]
+            },
+            {
+                id: 'intellectual-disability',
+                className: 'card-intellectual',
+                icon: '⭐',
+                title: 'Discapacidad Intelectual Leve',
+                name: 'Laura, la estudiante motivada',
+                description: 'Laura es una alumna de 1º de Bachillerato con discapacidad intelectual leve. Es una estudiante muy motivada y perseverante, siempre dispuesta a aprender, pero sus habilidades académicas se encuentran por debajo del promedio de su edad. Le cuesta comprender conceptos abstractos en matemáticas o filosofía, y necesita ejemplos concretos y apoyo visual constante para asimilar la información. Aunque puede seguir rutinas y completar tareas paso a paso, la resolución de problemas complejos o la planificación de proyectos a largo plazo le suponen un gran desafío. En las interacciones sociales, es amigable y busca la compañía de sus compañeros, pero a veces le cuesta interpretar las normas sociales no explícitas o mantener una conversación profunda sobre temas complejos. En el ámbito práctico, necesita apoyo para organizar sus horarios de estudio y para gestionar sus tareas cotidianas de manera autónoma.',
+                characteristics: [
+                    'Limitaciones en el funcionamiento intelectual (razonamiento, resolución de problemas).',
+                    'Deficiencias en el comportamiento adaptativo (comunicación, participación social).',
+                    'Necesita ejemplos concretos y apoyo continuo.',
+                    'Dificultad en la planificación y organización autónoma.'
+                ],
+                feedbackSteps: [
+                    {
+                        message: '¡Muy buen punto de partida! La motivación de Laura es una gran fortaleza. Desde tu rol, ¿cómo **articularías un Plan de Ajustes Razonables (PAR) o un Plan de Apoyo Individualizado (PAI)** que garantice adaptaciones curriculares significativas y apoyos específicos para su aprendizaje de conceptos abstractos?',
+                    },
+                    {
+                        message: '¡Excelente! Los planes individualizados son fundamentales. Laura tiene desafíos con la resolución de problemas complejos y la planificación. ¿Qué **programas de desarrollo de habilidades de autonomía e inserción sociolaboral** podrías investigar y proponer para prepararla para el futuro, tanto en el ámbito educativo como personal?',
+                    },
+                    {
+                        message: '¡Fantástico! Pensar en el futuro es vital. Laura es sociable pero le cuesta interpretar normas sociales. ¿Cómo diseñarías un **programa de entrenamiento en habilidades sociales o mediación entre iguales** para el centro, que la ayude a mejorar sus interacciones y a integrarse plenamente con sus compañeros?'
+                    }
+                ]
+            }
+        ];
+
+        let currentCaseIndex = 0; // Current case index in the 'cases' array
+        let currentFeedbackStepIndex = 0; // Current feedback step for the active case
+        const savedInterventions = {}; // Stores intervention text for each case during refinement
+        let isCaseFinalized = false; // Indicates if the intervention for the current case has been finalized
+
+        // Get DOM elements for both views
+        const mainPageView = document.getElementById('main-page-view');
+        const simulationPageView = document.getElementById('simulation-page-view');
+        const backToMainButton = document.getElementById('back-to-main-button');
+
+        const iconContainer = document.getElementById('icon-container');
+        const caseTitle = document.getElementById('case-title');
+        const caseName = document.getElementById('case-name');
+        const caseDescription = document.getElementById('case-description');
+        const caseCharacteristics = document.getElementById('case-characteristics');
+        const interventionInput = document.getElementById('intervention-input');
+        const submitButton = document.getElementById('submit-button');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const finalizeInterventionButton = document.getElementById('finalize-intervention-button');
+        const startOverButton = document.getElementById('start-over-button'); // This button is also for the main page
+
+        // Función para autenticar al usuario
+        async function authenticateUser() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                userId = auth.currentUser.uid;
+                console.log("Usuario autenticado:", userId);
+            } catch (error) {
+                console.error("Error al autenticar:", error);
+                userId = `anon-${crypto.randomUUID()}`; // Fallback to a random ID
+            }
+        }
+
+        /**
+         * Switches the view to the simulation page and loads the selected case.
+         * @param {string} caseId The ID of the case to load (e.g., 'tea', 'tdah').
+         */
+        function startSimulation(caseId) {
+            const index = cases.findIndex(c => c.id === caseId);
+            if (index !== -1) {
+                currentCaseIndex = index;
+                mainPageView.style.display = 'none'; // Hide main page
+                simulationPageView.style.display = 'flex'; // Show simulation page
+                simulationPageView.style.alignItems = 'flex-start'; // Adjust alignment for simulation
+                backToMainButton.style.display = 'inline-block'; // Show back button
+                displayCase(currentCaseIndex);
+            } else {
+                console.error("Caso no encontrado:", caseId);
+            }
+        }
+
+        /**
+         * Displays the details of a specific case.
+         * @param {number} index The index of the case to display from the 'cases' array.
+         */
+        function displayCase(index) {
+            if (index < 0 || index >= cases.length) {
+                console.error("Índice de caso fuera de rango.");
+                return;
+            }
+
+            const currentCase = cases[index];
+            currentFeedbackStepIndex = 0; // Reset feedback step for new case
+            isCaseFinalized = false; // Reset case finalization status
+            
+            // Update icon and its background color
+            iconContainer.textContent = currentCase.icon;
+            // Remove previous color classes and add current one
+            iconContainer.className = 'icon-container';
+            iconContainer.classList.add(currentCase.className);
+
+            // Update case details
+            caseTitle.textContent = currentCase.title;
+            caseName.textContent = currentCase.name;
+            caseDescription.textContent = currentCase.description;
+
+            // Clear previous characteristics and add new ones
+            caseCharacteristics.innerHTML = '';
+            currentCase.characteristics.forEach(char => {
+                const li = document.createElement('li');
+                li.textContent = char;
+                caseCharacteristics.appendChild(li);
+            });
+
+            // Restore intervention text if available for this case, otherwise clear
+            interventionInput.value = savedInterventions[currentCase.id] || '';
+            
+            // Reset UI elements
+            feedbackMessage.classList.remove('show');
+            feedbackMessage.style.display = 'none';
+            submitButton.disabled = false;
+            submitButton.textContent = 'Enviar Intervención';
+            finalizeInterventionButton.style.display = 'none';
+            startOverButton.style.display = 'none'; // Hide general start over, use specific logic
+            interventionInput.readOnly = false; // Ensure textarea is editable
+
+            // Show start-over button if it's the *only* case being worked on, or after feedback.
+            // When user is in simulation page, they only want to restart that specific case.
+            // The "He terminado, siguiente caso" button acts as the progression.
+        }
+
+        /**
+         * Handles the submission of the student's intervention.
+         */
+        async function handleSubmit() {
+            const interventionText = interventionInput.value.trim();
+            if (interventionText === "") {
+                feedbackMessage.style.backgroundColor = '#fee2e2';
+                feedbackMessage.style.color = '#991b1b';
+                feedbackMessage.style.borderColor = '#fca5a5';
+                feedbackMessage.textContent = 'Por favor, escribe tus ideas de intervención antes de enviar.';
+                feedbackMessage.classList.add('show');
+                feedbackMessage.style.display = 'block';
+                return;
+            }
+
+            const currentCase = cases[currentCaseIndex];
+            // Save current intervention text
+            savedInterventions[currentCase.id] = interventionText;
+
+            // Display feedback based on current step
+            if (currentFeedbackStepIndex < currentCase.feedbackSteps.length) {
+                const feedback = currentCase.feedbackSteps[currentFeedbackStepIndex];
+                feedbackMessage.style.backgroundColor = '#d1fae5';
+                feedbackMessage.style.color = '#065f46';
+                feedbackMessage.style.borderColor = '#a7f3d0';
+                feedbackMessage.textContent = feedback.message;
+                feedbackMessage.classList.add('show');
+                feedbackMessage.style.display = 'block';
+
+                currentFeedbackStepIndex++; // Move to the next feedback step
+
+                // Change button text for refinement
+                submitButton.textContent = 'Refinar propuesta';
+                finalizeInterventionButton.style.display = 'inline-block'; // Show finalize button after first submit
+            } else {
+                // All feedback steps completed, student can now finalize or continue refining
+                feedbackMessage.style.backgroundColor = '#dbeafe'; /* Blue-100 */
+                feedbackMessage.style.color = '#1e40af'; /* Blue-800 */
+                feedbackMessage.style.borderColor = '#93c5fd'; /* Blue-200 */
+                feedbackMessage.textContent = '¡Has explorado a fondo este caso! Puedes seguir refinando tu propuesta o darla por finalizada.';
+                feedbackMessage.classList.add('show');
+                feedbackMessage.style.display = 'block';
+                submitButton.textContent = 'Refinar propuesta'; // Keep text
+                finalizeInterventionButton.style.display = 'inline-block';
+            }
+
+            // Scroll to feedback message for visibility
+            feedbackMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        /**
+         * Finalizes the intervention for the current case and moves to the next.
+         */
+        async function finalizeAndNextCase() {
+            if (isCaseFinalized) return; // Prevent double submission
+
+            isCaseFinalized = true;
+            const currentCase = cases[currentCaseIndex];
+            const interventionText = interventionInput.value.trim();
+
+            if (!userId) {
+                console.error("Error: userId no disponible para guardar.");
+                // Display error to user
+                feedbackMessage.style.backgroundColor = '#fee2e2';
+                feedbackMessage.style.color = '#991b1b';
+                feedbackMessage.style.borderColor = '#fca5a5';
+                feedbackMessage.textContent = 'Error: No se pudo guardar la intervención. Inténtalo de nuevo.';
+                feedbackMessage.classList.add('show');
+                feedbackMessage.style.display = 'block';
+                return;
+            }
+
+            try {
+                // Guardar la intervención finalizada en Firestore
+                // Usamos la ruta /artifacts/{appId}/users/{userId}/interventions para datos privados del usuario
+                const interventionsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/interventions`);
+                await addDoc(interventionsCollectionRef, {
+                    caseId: currentCase.id,
+                    caseTitle: currentCase.title,
+                    studentId: userId,
+                    intervention: interventionText,
+                    finalized: true,
+                    timestamp: serverTimestamp() // Usamos serverTimestamp para la hora del servidor
+                });
+
+                feedbackMessage.style.backgroundColor = '#d1fae5';
+                feedbackMessage.style.color = '#065f46';
+                feedbackMessage.style.borderColor = '#a7f3d0';
+                feedbackMessage.textContent = '¡Intervención finalizada y guardada! Puedes volver a la página principal.';
+                feedbackMessage.classList.add('show');
+                feedbackMessage.style.display = 'block';
+
+                // Disable buttons immediately
+                submitButton.disabled = true;
+                finalizeInterventionButton.disabled = true;
+                interventionInput.readOnly = true;
+                backToMainButton.style.display = 'inline-block'; // Show back to main button clearly
+
+            } catch (e) {
+                console.error("Error al guardar la intervención finalizada: ", e);
+                feedbackMessage.style.backgroundColor = '#fee2e2';
+                feedbackMessage.style.color = '#991b1b';
+                feedbackMessage.style.borderColor = '#fca5a5';
+                feedbackMessage.textContent = 'Error al guardar la intervención finalizada. Por favor, inténtalo de nuevo.';
+                feedbackMessage.classList.add('show');
+                feedbackMessage.style.display = 'block';
+                // Re-enable buttons if saving failed
+                submitButton.disabled = false;
+                finalizeInterventionButton.disabled = false;
+                interventionInput.readOnly = false;
+            }
+        }
+
+        /**
+         * Shows the completion screen when all cases are done (or when user clicks "Start Over" on a case page).
+         */
+        function showCompletionScreen() {
+            // This function is now mainly for "Restart Simulation" logic on the case page
+            // Or if all cases were completed from a multi-case progression (which is not directly how this is designed now)
+            iconContainer.textContent = '🎉';
+            iconContainer.classList.remove('card-tea', 'card-tdah', 'card-reading', 'card-intellectual');
+            iconContainer.style.backgroundColor = '#fef08a';
+            iconContainer.style.color = '#a16207';
+            caseTitle.textContent = '¡Simulación Completada!';
+            caseName.textContent = 'Has analizado este caso.';
+            caseDescription.textContent = '¡Felicidades! Has completado el análisis de este caso. Tu empatía y capacidad para proponer soluciones son muy valiosas. ¡Ahora puedes volver a la página principal o reiniciar para este caso!';
+            caseCharacteristics.innerHTML = '';
+            interventionInput.style.display = 'none';
+            submitButton.style.display = 'none';
+            feedbackMessage.classList.remove('show');
+            feedbackMessage.style.display = 'none';
+            finalizeInterventionButton.style.display = 'none';
+            startOverButton.style.display = 'inline-block'; // Only show start over for current case
+            backToMainButton.style.display = 'inline-block'; // Always show back to main
+        }
+
+        /**
+         * Restarts the simulation from the current case.
+         */
+        function startOverCurrentCase() {
+            // This is for restarting the currently viewed case, not the whole simulation
+            currentFeedbackStepIndex = 0;
+            isCaseFinalized = false;
+            // savedInterventions[cases[currentCaseIndex].id] = ''; // Option to clear current case's text on restart
+            displayCase(currentCaseIndex);
+            
+            interventionInput.style.display = 'block';
+            submitButton.style.display = 'inline-block';
+            submitButton.disabled = false;
+            submitButton.textContent = 'Enviar Intervención';
+            finalizeInterventionButton.style.display = 'none';
+            interventionInput.readOnly = false;
+            backToMainButton.style.display = 'inline-block'; // Ensure back button is visible
+        }
+
+        // Functions for main page navigation
+        window.startSimulation = function(caseId) { // Expose to global scope
+            const index = cases.findIndex(c => c.id === caseId);
+            if (index !== -1) {
+                currentCaseIndex = index;
+                mainPageView.style.display = 'none'; // Hide main page
+                simulationPageView.style.display = 'flex'; // Show simulation page
+                simulationPageView.style.alignItems = 'flex-start'; // Adjust alignment for simulation
+                backToMainButton.style.display = 'inline-block'; // Show back button
+                displayCase(currentCaseIndex);
+            } else {
+                console.error("Caso no encontrado:", caseId);
+            }
+        }
+
+        window.goToMainPage = function() { // Expose to global scope
+            mainPageView.style.display = 'flex'; // Show main page
+            mainPageView.style.alignItems = 'center'; // Center main page content
+            simulationPageView.style.display = 'none'; // Hide simulation page
+            backToMainButton.style.display = 'none'; // Hide back button on main page
+            // Reset any simulation state if needed when returning to main page
+            currentCaseIndex = 0; // Reset index to default for new simulation start
+            currentFeedbackStepIndex = 0;
+            isCaseFinalized = false;
+            Object.keys(savedInterventions).forEach(key => delete savedInterventions[key]); // Clear all saved interventions
+        }
+
+
+        // Add event listeners
+        submitButton.addEventListener('click', handleSubmit);
+        finalizeInterventionButton.addEventListener('click', finalizeAndNextCase);
+        // Change startOverButton to restart only current case
+        startOverButton.addEventListener('click', startOverCurrentCase);
+        backToMainButton.addEventListener('click', goToMainPage);
+
+        // Initial setup when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            await authenticateUser(); // Authenticate user first
+            // Start by showing the main page
+            goToMainPage();
+        });
+    </script>
+</body>
+</html>
