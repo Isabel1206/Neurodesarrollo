@@ -292,10 +292,15 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Variables globales proporcionadas por el entorno de Canvas
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+         const firebaseConfig = {
+  	    apiKey: "AIzaSyAlkvIPs_L_oxW8LWHPUZjrRr1866qyrTA",
+ 	    authDomain: "intervenciones-neurodesarrollo.firebaseapp.com",
+ 	    projectId: "intervenciones-neurodesarrollo",
+ 	    storageBucket: "intervenciones-neurodesarrollo.firebasestorage.app",
+  	    messagingSenderId: "986724492253",
+      	appId: "1:986724492253:web:a2925c482bec212f808c34",
+  	    measurementId: "G-RR9W77KGZW"
+	    };
 
         // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
